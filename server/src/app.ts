@@ -7,6 +7,7 @@ import { timesheetsRouter } from './routes/timesheets'
 import { voiceRouter } from './routes/voice'
 import { settingsRouter } from './routes/settings'
 import { historyRouter } from './routes/history'
+import { odooRouter } from './routes/odoo'
 
 export const app = express()
 
@@ -29,3 +30,4 @@ app.use('/api/timesheets', timesheetsRouter)
 app.use('/api/voice', voiceRouter)
 app.use('/api/settings', settingsRouter)
 app.use('/api/history', historyRouter)
+app.use('/api/odoo', odooRouter)

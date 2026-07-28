@@ -310,6 +310,19 @@ button:disabled {
   font-weight: 600;
 }
 
+.csv-target-picker {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.csv-target-picker label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
 /* ---------- Timesheet rows ---------- */
 
 .row-list {

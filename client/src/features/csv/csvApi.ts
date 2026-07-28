@@ -12,10 +12,10 @@ export interface ExportCsvResult {
 }
 
 export const csvApi = {
-  exportCsv: async (rows: TimesheetRowInput[]): Promise<ExportCsvResult> => {
+  exportCsv: async (rows: TimesheetRowInput[], projectId: number, taskId: number | null): Promise<ExportCsvResult> => {
     const res = await apiFetch('/api/timesheets/export-csv', {
       method: 'POST',
-      body: JSON.stringify({ rows })
+      body: JSON.stringify({ rows, projectId, taskId })
     })
     if (!res.ok) {
       const body = await res.json().catch(() => ({ message: res.statusText }))
