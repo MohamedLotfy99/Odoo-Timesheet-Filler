@@ -1,3 +1,6 @@
+/** Same content as schema.sql, inlined so migrate.ts has no runtime filesystem dependency —
+ * needed because Netlify Functions don't reliably ship non-JS files alongside the bundled code. */
+export const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS sessions (
   id TEXT PRIMARY KEY,
   db TEXT NOT NULL,
@@ -36,3 +39,4 @@ CREATE TABLE IF NOT EXISTS history (
 );
 
 CREATE INDEX IF NOT EXISTS history_db_username_idx ON history (db, username);
+`

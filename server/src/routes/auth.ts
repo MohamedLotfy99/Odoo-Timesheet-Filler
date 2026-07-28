@@ -8,6 +8,10 @@ import { requireSession, SESSION_COOKIE_NAME } from '../middleware/requireSessio
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000
 const isProduction = process.env.NODE_ENV === 'production'
+/** Set COOKIE_CROSS_SITE=true only when the client and server are on different domains
+ * (e.g. separate Render services) — same-origin deploys (e.g. Netlify function + static
+ * site on one domain) should leave this unset so the cookie can stay 'lax'. */
+const isCrossSite = process.env.COOKIE_CROSS_SITE === 'true'
 
 export const authRouter = Router()
 
@@ -46,8 +50,8 @@ authRouter.post('/login', async (req, res) => {
 
     res.cookie(SESSION_COOKIE_NAME, sessionId, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction || isCrossSite,
+      sameSite: isCrossSite ? 'none' : 'lax',
       maxAge: SESSION_TTL_MS
     })
     res.json(session)
@@ -63,8 +67,8 @@ authRouter.post('/logout', async (req, res) => {
   }
   res.clearCookie(SESSION_COOKIE_NAME, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax'
+    secure: isProduction || isCrossSite,
+    sameSite: isCrossSite ? 'none' : 'lax'
   })
   res.json({ ok: true })
 })

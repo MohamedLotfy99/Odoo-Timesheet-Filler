@@ -11,6 +11,5 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json* ./
 RUN npm install --omit=dev
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/src/db/schema.sql ./dist/db/schema.sql
 EXPOSE 3001
 CMD ["node", "dist/index.js"]

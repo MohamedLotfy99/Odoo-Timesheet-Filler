@@ -1,11 +1,9 @@
-import { readFile } from 'fs/promises'
-import { join } from 'path'
 import { pool } from './pool'
+import { SCHEMA_SQL } from './schema'
 
-/** Runs schema.sql on boot. Every statement uses `CREATE TABLE/INDEX IF NOT EXISTS`, so re-running
- * this on every server start is idempotent and needs no separate migration-tracking table. */
+/** Runs the schema on boot. Every statement uses `CREATE TABLE/INDEX IF NOT EXISTS`, so re-running
+ * this on every server start (or Lambda cold start) is idempotent and needs no separate
+ * migration-tracking table. */
 export async function runMigrations(): Promise<void> {
-  const schemaPath = join(__dirname, 'schema.sql')
-  const sql = await readFile(schemaPath, 'utf-8')
-  await pool.query(sql)
+  await pool.query(SCHEMA_SQL)
 }
