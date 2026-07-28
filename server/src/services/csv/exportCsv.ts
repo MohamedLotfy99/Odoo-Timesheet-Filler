@@ -20,27 +20,26 @@ export interface BuildCsvResult {
 }
 
 /** Builds a CSV for Odoo's import wizard. `project_id`/`task_id` use Odoo's `/.id` column-header
- * convention (import by literal database id) rather than display-name matching, so every row is
- * pre-authorized for Odoo's timesheet-user create rule — a blank project_id fails that rule before
- * the user ever gets a chance to fill it in manually post-import. `employee_id` stays a plain display
- * name since it's not gated by the same rule and name-matching is good enough there. */
-export function buildTimesheetCsv(
-  rows: TimesheetRowInput[],
-  employeeDisplayName: string,
-  projectId: number,
-  taskId: number | null
-): BuildCsvResult {
+ * convention (import by literal database id, chosen per row in the UI) rather than display-name
+ * matching — a blank project_id fails Odoo's timesheet-user create rule before the user ever gets a
+ * chance to fill it in manually post-import, so each row must carry a real project id already.
+ * `employee_id` stays a plain display name since it's not gated by the same rule. */
+export function buildTimesheetCsv(rows: TimesheetRowInput[], employeeDisplayName: string): BuildCsvResult {
   const errors: { id: string; error: string }[] = []
   const lines = [toCsvRow(CSV_HEADERS)]
 
   for (const row of rows) {
+    if (!row.projectId) {
+      errors.push({ id: row.id, error: 'Project is required.' })
+      continue
+    }
     try {
       const unitAmount = parseDuration(row.duration)
       lines.push(
         toCsvRow([
           row.description,
-          String(projectId),
-          taskId ? String(taskId) : '',
+          String(row.projectId),
+          row.taskId ? String(row.taskId) : '',
           String(unitAmount),
           row.date,
           employeeDisplayName

@@ -14,7 +14,15 @@ function todayIso(): string {
 }
 
 function emptyRow(): TimesheetRowInput {
-  return { id: crypto.randomUUID(), url: '', description: '', duration: '', date: todayIso() }
+  return {
+    id: crypto.randomUUID(),
+    url: '',
+    description: '',
+    duration: '',
+    date: todayIso(),
+    projectId: null,
+    taskId: null
+  }
 }
 
 type RowStatus = 'idle' | 'pending' | 'success' | 'error'
@@ -27,9 +35,7 @@ export function TimesheetRowsPage(): ReactElement {
   const [submitting, setSubmitting] = useState(false)
   const [transcriptionProvider, setTranscriptionProvider] = useState<TranscriptionSettings['provider']>('webSpeech')
   const [projects, setProjects] = useState<OdooOption[]>([])
-  const [tasks, setTasks] = useState<OdooOption[]>([])
-  const [projectId, setProjectId] = useState<number | ''>('')
-  const [taskId, setTaskId] = useState<number | ''>('')
+  const [tasksByProject, setTasksByProject] = useState<Record<number, OdooOption[]>>({})
 
   useEffect(() => {
     settingsApi.get().then((s) => setTranscriptionProvider(s.transcription.provider))
@@ -40,14 +46,10 @@ export function TimesheetRowsPage(): ReactElement {
     odooApi.listProjects().then(setProjects)
   }, [mode, projects.length])
 
-  useEffect(() => {
-    setTaskId('')
-    if (!projectId) {
-      setTasks([])
-      return
-    }
-    odooApi.listTasks(projectId).then(setTasks)
-  }, [projectId])
+  function ensureTasksLoaded(projectId: number): void {
+    if (tasksByProject[projectId]) return
+    odooApi.listTasks(projectId).then((tasks) => setTasksByProject((prev) => ({ ...prev, [projectId]: tasks })))
+  }
 
   function updateRow(id: string, patch: Partial<TimesheetRowInput>): void {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)))
@@ -91,17 +93,18 @@ export function TimesheetRowsPage(): ReactElement {
   }
 
   async function handleExportCsv(): Promise<void> {
-    if (!projectId) return
     setSubmitting(true)
     setCsvErrors({})
     try {
-      const { blob, errors } = await csvApi.exportCsv(rows, projectId, taskId || null)
+      const { blob, errors } = await csvApi.exportCsv(rows)
       setCsvErrors(Object.fromEntries(errors.map((e) => [e.id, e.error])))
       csvApi.downloadBlob(blob, `timesheet-${todayIso()}.csv`)
     } finally {
       setSubmitting(false)
     }
   }
+
+  const csvExportDisabled = submitting || rows.length === 0 || rows.some((r) => !r.projectId)
 
   return (
     <div className="page">
@@ -122,36 +125,6 @@ export function TimesheetRowsPage(): ReactElement {
             Export CSV
           </button>
         </div>
-        {mode === 'csv' && (
-          <div className="csv-target-picker">
-            <label>
-              Project
-              <select value={projectId} onChange={(e) => setProjectId(e.target.value ? Number(e.target.value) : '')}>
-                <option value="">Select a project…</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Task (optional)
-              <select
-                value={taskId}
-                onChange={(e) => setTaskId(e.target.value ? Number(e.target.value) : '')}
-                disabled={!projectId}
-              >
-                <option value="">No task</option>
-                {tasks.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        )}
         <h3>Timesheet rows</h3>
         <div className="row-list">
           {rows.map((row) => {
@@ -165,6 +138,9 @@ export function TimesheetRowsPage(): ReactElement {
                 resultMessage={mode === 'csv' ? csvErrors[row.id] : result?.success ? result.taskName : result?.error}
                 transcriptionProvider={transcriptionProvider}
                 showTaskUrl={mode === 'submit'}
+                projects={projects}
+                tasksByProject={tasksByProject}
+                onRequestTasks={ensureTasksLoaded}
                 onChange={(patch) => updateRow(row.id, patch)}
                 onRemove={() => removeRow(row.id)}
               />
@@ -180,7 +156,7 @@ export function TimesheetRowsPage(): ReactElement {
               {submitting ? 'Submitting…' : 'Submit all'}
             </button>
           ) : (
-            <button type="button" onClick={handleExportCsv} disabled={submitting || rows.length === 0 || !projectId}>
+            <button type="button" onClick={handleExportCsv} disabled={csvExportDisabled}>
               {submitting ? 'Exporting…' : 'Download CSV'}
             </button>
           )}

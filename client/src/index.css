@@ -310,19 +310,6 @@ button:disabled {
   font-weight: 600;
 }
 
-.csv-target-picker {
-  display: flex;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
-}
-
-.csv-target-picker label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-
 /* ---------- Timesheet rows ---------- */
 
 .row-list {
@@ -345,7 +332,7 @@ button:disabled {
 }
 
 .timesheet-row-no-url {
-  grid-template-columns: 3fr 100px 150px auto;
+  grid-template-columns: 1.2fr 1.2fr 2fr 100px 150px auto;
 }
 
 .timesheet-row label {

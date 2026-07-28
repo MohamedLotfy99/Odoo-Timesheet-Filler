@@ -1,5 +1,7 @@
 import { useCallback, type ReactElement } from 'react'
 import type { TimesheetRowInput, TranscriptionSettings, VoiceExtraction } from '../../shared/types'
+import type { OdooOption } from '../odoo/odooApi'
+import { SearchableSelect } from '../odoo/SearchableSelect'
 import { useRecorder } from './useRecorder'
 
 interface TimesheetRowProps {
@@ -8,6 +10,9 @@ interface TimesheetRowProps {
   resultMessage?: string
   transcriptionProvider: TranscriptionSettings['provider']
   showTaskUrl: boolean
+  projects: OdooOption[]
+  tasksByProject: Record<number, OdooOption[]>
+  onRequestTasks: (projectId: number) => void
   onChange: (patch: Partial<TimesheetRowInput>) => void
   onRemove: () => void
 }
@@ -18,6 +23,9 @@ export function TimesheetRow({
   resultMessage,
   transcriptionProvider,
   showTaskUrl,
+  projects,
+  tasksByProject,
+  onRequestTasks,
   onChange,
   onRemove
 }: TimesheetRowProps): ReactElement {
@@ -38,9 +46,14 @@ export function TimesheetRow({
 
   const recorder = useRecorder({ provider: transcriptionProvider, onResult: handleResult })
 
+  function handleProjectChange(projectId: number | null): void {
+    onChange({ projectId, taskId: null })
+    if (projectId) onRequestTasks(projectId)
+  }
+
   return (
     <div className={`timesheet-row timesheet-row-${status}${showTaskUrl ? '' : ' timesheet-row-no-url'}`}>
-      {showTaskUrl && (
+      {showTaskUrl ? (
         <label>
           Task URL
           <input
@@ -49,6 +62,30 @@ export function TimesheetRow({
             placeholder="https://.../web#id=123&model=project.task&view_type=form"
           />
         </label>
+      ) : (
+        <>
+          <label className="project-field">
+            Project
+            <SearchableSelect
+              id={`project-options-${row.id}`}
+              options={projects}
+              value={row.projectId}
+              onChange={handleProjectChange}
+              placeholder="Search projects…"
+            />
+          </label>
+          <label className="task-field">
+            Task (optional)
+            <SearchableSelect
+              id={`task-options-${row.id}`}
+              options={row.projectId ? (tasksByProject[row.projectId] ?? []) : []}
+              value={row.taskId}
+              onChange={(taskId) => onChange({ taskId })}
+              placeholder="Search tasks…"
+              disabled={!row.projectId}
+            />
+          </label>
+        </>
       )}
       <label>
         Description

@@ -21,21 +21,15 @@ timesheetsRouter.post('/submit-rows', requireSession, async (req, res) => {
 
 timesheetsRouter.post('/export-csv', requireSession, async (req, res) => {
   const rows = req.body?.rows as TimesheetRowInput[] | undefined
-  const projectId = Number(req.body?.projectId)
-  const taskId = req.body?.taskId ? Number(req.body.taskId) : null
   if (!Array.isArray(rows)) {
     res.status(400).json({ message: 'rows must be an array.' })
-    return
-  }
-  if (!projectId) {
-    res.status(400).json({ message: 'projectId is required.' })
     return
   }
 
   const { employeeId } = req.odoo!
   const employeeDisplayName = await fetchEmployeeDisplayName(req.odoo!.client, employeeId)
 
-  const { csv, errors } = buildTimesheetCsv(rows, employeeDisplayName, projectId, taskId)
+  const { csv, errors } = buildTimesheetCsv(rows, employeeDisplayName)
 
   if (errors.length && !rows.some((r) => !errors.some((e) => e.id === r.id))) {
     res.status(400).json({ message: 'All rows failed to export.', errors })

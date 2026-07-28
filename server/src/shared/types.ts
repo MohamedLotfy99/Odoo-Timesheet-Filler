@@ -19,6 +19,9 @@ export interface TimesheetRowInput {
   description: string
   duration: string // HH:MM
   date: string // YYYY-MM-DD
+  /** Only used in CSV-export mode — ignored by the direct-submit-to-Odoo path. */
+  projectId: number | null
+  taskId: number | null
 }
 
 export interface TimesheetRowResult {
