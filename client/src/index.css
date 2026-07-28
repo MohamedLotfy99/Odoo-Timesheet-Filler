@@ -1,0 +1,455 @@
+:root {
+  --bg: #f6f6f8;
+  --bg-elevated: #ffffff;
+  --fg: #1c1d21;
+  --muted: #75767d;
+  --border: #e4e4e8;
+  --accent: #4f5eff;
+  --accent-fg: #ffffff;
+  --accent-soft: #eef0ff;
+  --danger: #d64545;
+  --success: #2f9e57;
+  --shadow-sm: 0 1px 2px rgba(20, 20, 30, 0.05);
+  --shadow-md: 0 4px 16px rgba(20, 20, 30, 0.08);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #17181c;
+  --bg-elevated: #1f2025;
+  --fg: #edEDEF;
+  --muted: #93949c;
+  --border: #2c2d33;
+  --accent: #7c88ff;
+  --accent-fg: #10111a;
+  --accent-soft: #262a4d;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #17181c;
+    --bg-elevated: #1f2025;
+    --fg: #edEDEF;
+    --muted: #93949c;
+    --border: #2c2d33;
+    --accent: #7c88ff;
+    --accent-fg: #10111a;
+    --accent-soft: #262a4d;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-3);
+}
+
+h3 {
+  font-size: 0.95em;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- App shell ---------- */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.app-header h1 {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.tab-nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.tab-nav button[aria-current='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.app-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.app-user-name {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6);
+}
+
+/* ---------- Cards ---------- */
+
+.page section {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- Forms ---------- */
+
+label {
+  display: block;
+  margin-bottom: var(--space-3);
+  font-weight: 500;
+  font-size: 0.92em;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-1);
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.95em;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+textarea {
+  font-family: inherit;
+  resize: vertical;
+}
+
+/* ---------- Buttons ---------- */
+
+button {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 500;
+  font-size: 0.92em;
+  cursor: pointer;
+  transition:
+    filter 0.12s ease,
+    background 0.12s ease;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+  padding: 6px 10px;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--border);
+  color: var(--fg);
+}
+
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- Login screen ---------- */
+
+.login-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.login-card {
+  width: 380px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.login-brand {
+  font-size: 2em;
+  margin-bottom: var(--space-2);
+}
+
+.login-card h1 {
+  font-size: 1.15em;
+  margin-bottom: var(--space-1);
+}
+
+.login-subtitle {
+  color: var(--muted);
+  margin: 0 0 var(--space-5);
+  font-size: 0.9em;
+}
+
+.login-card form {
+  text-align: left;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+/* ---------- Mode toggle ---------- */
+
+.mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: var(--space-4);
+  background: var(--bg);
+}
+
+.mode-toggle-btn {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-radius: calc(var(--radius-md) - 3px);
+  padding: 7px 14px;
+}
+
+.mode-toggle-btn:hover:not(:disabled) {
+  filter: none;
+  color: var(--fg);
+}
+
+.mode-toggle-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- Timesheet rows ---------- */
+
+.row-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.timesheet-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 100px 150px auto;
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  position: relative;
+}
+
+.timesheet-row-no-url {
+  grid-template-columns: 3fr 100px 150px auto;
+}
+
+.timesheet-row label {
+  margin-bottom: 0;
+}
+
+.timesheet-row textarea {
+  min-height: 38px;
+}
+
+.timesheet-row-success {
+  border-color: var(--success);
+}
+
+.timesheet-row-error {
+  border-color: var(--danger);
+}
+
+.row-remove {
+  align-self: center;
+  margin-top: var(--space-4);
+}
+
+.row-status {
+  grid-column: 1 / -1;
+  font-size: 0.88em;
+}
+
+.row-status.success {
+  color: var(--success);
+}
+
+.row-status.error {
+  color: var(--danger);
+}
+
+/* ---------- Voice dictation ---------- */
+
+.description-field {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.description-field textarea {
+  flex: 1;
+}
+
+.mic-button {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mic-button-recording {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+  animation: mic-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(214, 69, 69, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(214, 69, 69, 0);
+  }
+}
+
+.mic-error {
+  display: block;
+  margin-top: var(--space-1);
+}
+
+/* ---------- History ---------- */
+
+.history-entry {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.history-entry-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.history-entry-missing {
+  opacity: 0.6;
+}
+
+.empty-state {
+  color: var(--muted);
+}
+
+/* ---------- Misc ---------- */
+
+.error {
+  color: var(--danger);
+  font-size: 0.9em;
+}
+
+.notice {
+  color: var(--muted);
+  font-size: 0.9em;
+}
